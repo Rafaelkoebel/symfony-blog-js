@@ -8,17 +8,17 @@
 <body>
 
 <div class="container">
-  <h1>Blog en js</h1>
-  <nav>
-      <button id="button_posts">Articles</button>
-      <button id="button_categories">Categories</button>
-      <button id="button_users" style="display: none">Utilisateurs</button>
-      <button id="button_login">Login</button>
-      <button id="button_logout" style="display: none">Logout</button>
-      <div id="cat"></div>
-  </nav>
-  <div id="loader" style="display:none"><img src="avocat.gif" alt="" style="height:200px"></div>
-  <div id="root"></div>
+<h1>Blog en js</h1>
+    <nav>
+        <button id="button_posts">Articles</button>
+        <button id="button_categories">Categories</button>
+        <button id="button_users" style="display: none">Utilisateurs</button>
+        <button id="button_login">Login</button>
+        <button id="button_logout" style="display: none">Logout</button>
+        <div id="cat"></div>
+    </nav>
+<div id="loader" style="display:none"><img src="avocat.gif" alt="" style="height:200px"></div>
+<div id="root"></div>
 </div>
 
 
@@ -40,7 +40,7 @@
 
         const cat = document.getElementById('cat')
         const root = document.getElementById('root')
-        const api = 'http://localhost:8000/api'
+        const api = 'http://localhost:8000'
         const loader = document.getElementById('loader')
         const utilisateurs = document.getElementById('button_users')
         const logout = document.getElementById('button_logout')
@@ -56,7 +56,7 @@
         document.getElementById('cat')
         console.log('BEGIN CAT')
 
-            fetch(api + '/categories')
+            fetch(api + '/api/categories')
 
             .then (response =>{
                 // console.log('response = ' + response)
@@ -76,9 +76,70 @@
                     // append(root, h2)
                     // h2.innerHTML = `${category.id}`
                     
-                    let button = createNode('button')
-                    append(cat, button)
-                    button.innerHTML = `${category.name}`
+                    let a = createNode('a')
+                    append(cat, a)
+                    a.innerHTML = `${category.name}`
+                    a.href = api + `/api/categories/${category.id}`
+                    a.classList.add('btn', 'btn-primary', 'm-1')
+
+
+
+                    a.addEventListener('click', function (event){
+                        loader.style.display = 'block'
+                        event.preventDefault()
+
+
+
+                        fetch(a.href)
+
+                        .then (response =>{
+                            return response.json()
+                        })
+
+                        .then (data =>{
+                            root.innerHTML = ''
+                            h2 = createNode('h2')
+                            append(root, h2)
+                            h2.innerHTML = `${category.name} :`
+
+                            data.posts.map(function (post) {
+                                console.log('Post = ' , post)
+
+                                fetch(api + post)
+
+                                .then (response =>{
+                                    return response.json()
+                                })
+
+                                .then (post =>{
+
+                                    let h3 = createNode('h3')
+                                    append(root, h3)
+                                    h3.innerHTML = `${post.title}`
+                                    
+                                    div = createNode('div')
+                                    append(root, div)
+                                    div.innerHTML = `${post.createdAt}`
+                                    
+                                    let img = createNode('img')
+                                    append(root, img)
+                                    img.src = `${post.image}`
+
+                                    div = createNode('div')
+                                    append(root, div)
+                                    div.innerHTML = `${post.content}`
+
+                                    
+                                    
+                                })
+                                
+                            }) 
+                            loader.style.display = 'none'
+                        })
+
+
+
+                    })
                     
                     // div = createNode('div')
                     // append(root, div)
@@ -90,7 +151,6 @@
             console.log('END CAT')
 
 
-            document.get
 
 
         document.getElementById("button_posts").addEventListener("click", function (){
@@ -99,7 +159,7 @@
             root.innerHTML = ''
             loader.style.display = 'block'
 
-            fetch(api + '/posts')
+            fetch(api + '/api/posts')
 
             .then (response =>{
                 console.log('response = ' + response)
@@ -131,7 +191,7 @@
 
                     div = createNode('div')
                     append(root, div)
-                    div.innerHTML = `${post.content}`
+                    div.innerHTML = `${post.content.substring(0, 1000)}...`
 
                     loader.style.display = 'none'
                     
@@ -154,7 +214,7 @@
             root.innerHTML = ''
             loader.style.display = 'block'
 
-            fetch(api + '/categories')
+            fetch(api + '/api/categories')
 
             .then (response =>{
                 // console.log('response = ' + response)
@@ -205,7 +265,7 @@
             const token = localStorage.getItem('token')
             console.log('token = ', token)
 
-            fetch(api + '/users', {
+            fetch(api + '/api/users', {
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': 'Bearer ' + token 
@@ -265,7 +325,7 @@
 
             loader.style.display = 'block'
 
-            fetch(api + '/login_check', {
+            fetch(api + '/api/login_check', {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -303,7 +363,6 @@
 
     
     
- 
         
 
 
